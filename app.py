@@ -3,13 +3,13 @@ import json
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
-data = list()
 
 # Authenticate to Twitter
 @app.route('/')
 def index():
     auth = tweepy.OAuthHandler("uv1ZlOemop7Vw7YTmacb7ECa6", "sHCxECndhAF0xRrFjbuoimHgP9oFi1bd5Yj2WqzhRUD6gUiffd")
     auth.set_access_token("795115994868051968-LDVznEIUZLCfyHRiqM9MYGSPhsi5hH9", "8zVGvGyqOx5z3t5A3DZ1WN42tKwuoj6gC47w4VK9JmQhE")
+    data = list()
 
     # Create API object
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
