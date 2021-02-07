@@ -3,7 +3,6 @@ import json
 import sqlite3 as sql
 from flask import Flask, render_template, request, g
 
-
 app = Flask(__name__)
 
 conn = sql.connect('database.db')
@@ -11,17 +10,17 @@ conn.execute('CREATE TABLE IF NOT EXISTS tweets (id INTEGER PRIMARY KEY, name TE
 conn.close()
 
 
-
 @app.route('/')
 def index():
     auth = tweepy.OAuthHandler("uv1ZlOemop7Vw7YTmacb7ECa6", "sHCxECndhAF0xRrFjbuoimHgP9oFi1bd5Yj2WqzhRUD6gUiffd")
-    auth.set_access_token("795115994868051968-LDVznEIUZLCfyHRiqM9MYGSPhsi5hH9", "8zVGvGyqOx5z3t5A3DZ1WN42tKwuoj6gC47w4VK9JmQhE")
+    auth.set_access_token("795115994868051968-LDVznEIUZLCfyHRiqM9MYGSPhsi5hH9",
+                          "8zVGvGyqOx5z3t5A3DZ1WN42tKwuoj6gC47w4VK9JmQhE")
 
     # Create API object
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
     # timeline tweets
-    timeline_tweets= api.home_timeline()
+    timeline_tweets = api.home_timeline()
 
     # search tweets
     search_tweet = api.search(q="jkuat", lang="en", rpp=10)
@@ -40,7 +39,7 @@ def index():
 
                 with sql.connect("database.db") as con:
                     cur = con.cursor()
-                    cur.execute("INSERT INTO tweets (name,text) VALUES (?,?)",(name,text) )
+                    cur.execute("INSERT INTO tweets (name,text) VALUES (?,?)", (name, text))
 
                     con.commit()
                     msg = "Record successfully added"
@@ -53,25 +52,26 @@ def index():
                 con.close()
 
         def on_error(self, status):
+            return render_template('home.html')
             print("Error detected")
 
     tweets_listener = MyStreamListener(api)
     stream = tweepy.Stream(api.auth, tweets_listener)
-    stream.filter(track=["trump",], languages=["en"])
+    stream.filter(track=["trump"], languages=["en"])
     return render_template('home.html')
 
 
 @app.route('/list')
 def list():
-   con = sql.connect("database.db")
-   con.row_factory = sql.Row
+    con = sql.connect("database.db")
+    con.row_factory = sql.Row
 
-   cur = con.cursor()
-   cur.execute("select * from tweets order by id DESC")
+    cur = con.cursor()
+    cur.execute("select * from tweets order by id DESC")
 
-   rows = cur.fetchall();
-   return render_template("list.html",rows = rows)
+    rows = cur.fetchall();
+    return render_template("list.html", rows=rows)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     app.run(debug=True)
